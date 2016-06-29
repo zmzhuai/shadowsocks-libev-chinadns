@@ -1,4 +1,4 @@
-M ubuntu:trusty
+FROM ubuntu:trusty
 
 MAINTAINER Min Zhang <zmzhuai@gmail.com>
 
