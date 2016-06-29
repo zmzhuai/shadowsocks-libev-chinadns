@@ -45,8 +45,8 @@ RUN mkdir /etc/shadowsocks-libev/ \
 
 # Update chnroute.txt and start shadowsocks client and chinadns
 WORKDIR $CHINADNSWORKDIR
-RUN apt-get install curl \
-     && curl 'http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest' | grep ipv4 | grep CN | awk -F\| '{ printf("%s/%d\n", $4, 32-log($5)/log(2)) }' > chnroute.txt
+RUN apt-get install -y curl
+RUN curl 'http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest' | grep ipv4 | grep CN | awk -F\| '{ printf("%s/%d\n", $4, 32-log($5)/log(2)) }' > chnroute.txt
 #&& ss-local -c /etc/shadowsocks-libev/config.json -u -f /var/run/ss-local.pid \
 #&& ss-tunnel -c /etc/shadowsocks-libev/config.json -u -l 5300 -L 8.8.4.4:53 -f /var/run/ss-tunnel.pid \
 #&& chinadns -m -c ./chnroute.txt -s 119.233.255.229,58.22.96.66,127.0.0.1:5300
