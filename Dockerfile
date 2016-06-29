@@ -5,6 +5,7 @@ MAINTAINER Min Zhang <zmzhuai@gmail.com>
 ENV DEPENDENCIES git-core build-essential autoconf libtool libssl-dev
 ENV SHADOWSOCKSDIR /tmp/shadowsocks-libev
 ENV CHINADNSDIR /tmp/chinadns
+ENV CHINADNSWORKDIR ~/chinadns
 ENV SSVERSION v2.4.7
 ENV CDVERSION 1.3.2
 ENV PORT 8338
@@ -36,6 +37,19 @@ WORKDIR /
 RUN rm -rf $SHADOWSOCKSDIR/ \
      && rm -rf $CHINADNSDIR/ \
      && apt-get --purge autoremove -y $DEPENDENCIES
+
+WORKDIR /
+RUN mkdir /etc/shadowsocks-libev/ \
+     && touch /etc/shadowsocks-libev/config.json
+
+
+# Update chnroute.txt and start shadowsocks client and chinadns
+WORKDIR $CHINADNSWORKDIR
+RUN apt-get install curl \
+     && curl 'http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest' | grep ipv4 | grep CN | awk -F\| '{ printf("%s/%d\n", $4, 32-log($5)/log(2)) }' > chnroute.txt
+#&& ss-local -c /etc/shadowsocks-libev/config.json -u -f /var/run/ss-local.pid \
+#&& ss-tunnel -c /etc/shadowsocks-libev/config.json -u -l 5300 -L 8.8.4.4:53 -f /var/run/ss-tunnel.pid \
+#&& chinadns -m -c ./chnroute.txt -s 119.233.255.229,58.22.96.66,127.0.0.1:5300
 
 # Port in the json config file won't take affect. Instead we'll use 8388.
 #EXPOSE $PORT
